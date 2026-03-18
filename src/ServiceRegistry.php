@@ -23,26 +23,19 @@ class ServiceRegistry implements ServiceRegistryInterface
      *
      * @var object[]
      */
-    private $services = [];
+    private array $services = [];
 
-    /**
-     * Interface or parent class which is required by all services.
-     *
-     * @var string
-     */
-    private $className;
-
-    /**
-     * Human readable context for these services, e.g. "grid field"
-     *
-     * @var string
-     */
-    private $context;
-
-    public function __construct(string $className, string $context = 'service')
+    public function __construct(
+        /**
+         * Interface or parent class which is required by all services.
+         */
+        private string $className,
+        /**
+         * Human readable context for these services, e.g. "grid field"
+         */
+        private string $context = 'service'
+    )
     {
-        $this->className = $className;
-        $this->context = $context;
     }
 
     public function all(): array
@@ -58,7 +51,7 @@ class ServiceRegistry implements ServiceRegistryInterface
 
         if (!$service instanceof $this->className) {
             throw new \InvalidArgumentException(
-                sprintf('%s needs to be of type "%s", "%s" given.', ucfirst($this->context), $this->className, get_class($service))
+                sprintf('%s needs to be of type "%s", "%s" given.', ucfirst($this->context), $this->className, $service::class)
             );
         }
 

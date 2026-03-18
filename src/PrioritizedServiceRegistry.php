@@ -17,32 +17,22 @@ final class PrioritizedServiceRegistry implements PrioritizedServiceRegistryInte
 {
     /**
      * @psalm-var array<int, array{service: object, priority: int}>
-     *
-     * @var array
      */
-    private $registry = [];
+    private array $registry = [];
 
-    /** @var bool */
-    private $sorted = true;
+    private bool $sorted = true;
 
-    /**
-     * Interface which is required by all services.
-     *
-     * @var string
-     */
-    private $interface;
-
-    /**
-     * Human readable context for these services, e.g. "tax calculation"
-     *
-     * @var string
-     */
-    private $context;
-
-    public function __construct(string $interface, string $context = 'service')
+    public function __construct(
+        /**
+         * Interface which is required by all services.
+         */
+        private string $interface,
+        /**
+         * Human readable context for these services, e.g. "tax calculation"
+         */
+        private string $context = 'service'
+    )
     {
-        $this->interface = $interface;
-        $this->context = $context;
     }
 
     public function all(): iterable
@@ -78,16 +68,14 @@ final class PrioritizedServiceRegistry implements PrioritizedServiceRegistryInte
         if (!$this->has($service)) {
             throw new NonExistingServiceException(
                 $this->context,
-                get_class($service),
+                $service::class,
                 array_map('get_class', array_column($this->registry, 'service'))
             );
         }
 
         $this->registry = array_filter(
             $this->registry,
-            static function (array $record) use ($service): bool {
-                return $record['service'] !== $service;
-            }
+            static fn(array $record): bool => $record['service'] !== $service
         );
     }
 
@@ -111,7 +99,7 @@ final class PrioritizedServiceRegistry implements PrioritizedServiceRegistryInte
                 '%s needs to implements "%s", "%s" given.',
                 $this->context,
                 $this->interface,
-                get_class($service)
+                $service::class
             ));
         }
     }
