@@ -34,8 +34,7 @@ class ServiceRegistry implements ServiceRegistryInterface
          * Human readable context for these services, e.g. "grid field"
          */
         private string $context = 'service'
-    )
-    {
+    ) {
     }
 
     public function all(): array

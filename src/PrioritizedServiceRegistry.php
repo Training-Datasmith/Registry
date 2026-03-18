@@ -31,8 +31,7 @@ final class PrioritizedServiceRegistry implements PrioritizedServiceRegistryInte
          * Human readable context for these services, e.g. "tax calculation"
          */
         private string $context = 'service'
-    )
-    {
+    ) {
     }
 
     public function all(): iterable
@@ -75,7 +74,7 @@ final class PrioritizedServiceRegistry implements PrioritizedServiceRegistryInte
 
         $this->registry = array_filter(
             $this->registry,
-            static fn(array $record): bool => $record['service'] !== $service
+            static fn (array $record): bool => $record['service'] !== $service
         );
     }
 
