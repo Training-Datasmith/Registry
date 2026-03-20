@@ -17,28 +17,50 @@ namespace Sylius\Component\Registry;
 class Service_Registry implements Service_Registry_Interface
 {
     /**
+     * Map of registered services keyed by their string identifier.
+     *
      * @psalm-var array<string, object>
      *
      * @var object[]
      */
     private array $services = [];
+
+    /**
+     * Creates a new registry that only accepts services of the given type.
+     *
+     * @param string $class_name Fully-qualified interface or class name that every registered service must implement/extend
+     * @param string $context    Human-readable label for error messages, e.g. "grid field" or "payment method"
+     */
     public function __construct(
-        /**
-         * Interface or parent class which is required by all services.
-         */
-        private string $class_name,
-        /**
-         * Human readable context for these services, e.g. "grid field"
-         */
-        private string $context = 'service'
-    )
-    {
+        private readonly string $class_name,
+        private readonly string $context = 'service'
+    ) {
     }
+
+    /**
+     * Returns all registered services keyed by their identifier.
+     *
+     * @return object[] Map of identifier => service instance
+     *
+     * @complexity O(1)
+     */
     public function all(): array
     {
         return $this->services;
     }
-    public function register(string $identifier, $service): void
+
+    /**
+     * Registers a service under the given identifier.
+     *
+     * @param string $identifier Unique string key for this service within the registry
+     * @param object $service    Service instance; must be an instanceof $class_name
+     *
+     * @return void
+     *
+     * @throws Existing_Service_Exception   If a service with this identifier is already registered
+     * @throws \InvalidArgumentException    If the service does not implement/extend the required type
+     */
+    public function register(string $identifier, object $service): void
     {
         if ($this->has($identifier)) {
             throw new Existing_Service_Exception($this->context, $identifier);
@@ -48,6 +70,16 @@ class Service_Registry implements Service_Registry_Interface
         }
         $this->services[$identifier] = $service;
     }
+
+    /**
+     * Removes a previously registered service.
+     *
+     * @param string $identifier Identifier of the service to remove
+     *
+     * @return void
+     *
+     * @throws Non_Existing_Service_Exception If no service with this identifier is registered
+     */
     public function unregister(string $identifier): void
     {
         if (!$this->has($identifier)) {
@@ -55,10 +87,28 @@ class Service_Registry implements Service_Registry_Interface
         }
         unset($this->services[$identifier]);
     }
+
+    /**
+     * Checks whether a service is registered under the given identifier.
+     *
+     * @param string $identifier Identifier to look up
+     *
+     * @return bool True if the identifier is registered, false otherwise
+     */
     public function has(string $identifier): bool
     {
         return isset($this->services[$identifier]);
     }
+
+    /**
+     * Retrieves a registered service by its identifier.
+     *
+     * @param string $identifier Identifier of the service to retrieve
+     *
+     * @return object The registered service instance
+     *
+     * @throws Non_Existing_Service_Exception If no service with this identifier is registered
+     */
     public function get(string $identifier): object
     {
         if (!$this->has($identifier)) {
