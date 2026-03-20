@@ -8,15 +8,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Sylius\Component\Registry;
 
-interface ServiceRegistryInterface
+interface Service_Registry_Interface
 {
     public function all(): array;
-
     /**
      * @param object $service
      *
@@ -24,14 +21,11 @@ interface ServiceRegistryInterface
      * @throws \InvalidArgumentException
      */
     public function register(string $identifier, $service): void;
-
     /**
      * @throws NonExistingServiceException
      */
     public function unregister(string $identifier): void;
-
     public function has(string $identifier): bool;
-
     /**
      * @return object
      *
